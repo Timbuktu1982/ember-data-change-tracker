@@ -10,8 +10,14 @@ export const modelTransform = function(model, polymorphic) {
 export const relationShipTransform = {
   belongsTo: {
     serialize(model, key, options) {
-      let relationship = model.belongsTo(key).belongsToRelationship;
-      let value = relationship.hasOwnProperty('inverseRecordData') ? relationship.inverseRecordData: relationship.canonicalState;
+      let belongsTo = model.belongsTo(key);
+      let relationship = belongsTo.belongsToRelationship;
+
+      let value = relationship.hasOwnProperty('inverseRecordData') ? relationship.inverseRecordData : relationship.canonicalState;
+
+      if ((value === undefined && belongsTo.id))
+        return belongsTo.id();
+
       return value && modelTransform(value, options.polymorphic);
     },
 
